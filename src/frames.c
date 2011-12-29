@@ -58,7 +58,6 @@ void frame_update_current(GtkColorButton*** color_buttons){
 	for(i = 0; i<10; i++){
 		for(j = 0; j<6; j++){
 			gtk_color_button_get_rgba(color_buttons[i][j], &rgba);
-			//free(frame_header->current_frame->frame[i][j]);
 			get_short_color_string(frame_header->current_frame->frame[i][j], rgba);
 		}
 	}

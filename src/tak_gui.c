@@ -195,12 +195,6 @@ static void on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data){
         case GDK_KEY_Right:
         	show_next(widget, data);
             break;
-    /*  case GDK_Up:
-            yadd -= 5;
-            break;
-        case GDK_Down:
-            yadd += 5;
-            break;*/
         default:
             return;  /* propogate event */
     }
