@@ -133,16 +133,11 @@ static void insert_before(GtkWidget *widget, gpointer data){
 	frame_insert_front(color_button);
 
 	update_label();
-//	frame_show_next(color_button);
-
 }
 static void insert_behind(GtkWidget *widget, gpointer data){
 	frame_insert_back(color_button);
 
 	update_label();
-
-//	frame_show_prev(color_button);
-
 }
 
 static void color_changed(GtkWidget *widget, gpointer data){
@@ -153,25 +148,10 @@ static void color_changed(GtkWidget *widget, gpointer data){
 	for(i = 0; i<10; i++){
 		for(j = 0; j<6; j++){
 			gtk_color_button_get_rgba(color_button[i][j], &rgba);
-			//free(frame_header->current_frame->frame[i][j]);
 			get_short_color_string(color_string, rgba);
 			gtk_button_set_label ((GtkButton*)toggle_button[i][j], color_string);
 		}
 	}
-	printf("Color_changed_ends\n");
-//	GdkColor color;
-//	int i, j;
-//	gchar* color_string;
-/*	for(i = 0; i<10;i++){
-		for(j = 0; j<6;j++){
-			gtk_color_button_get_color(color_button[i][j], &color);
-			strcpy(color_string, gdk_color_to_string (&color));
-			get_short_color_string(color_string);
-			gtk_button_set_label ((GtkButton*)toggle_button[i][j], color_string);
-		}
-	}*/
-	printf("Color_changed_ends\n");
-	//free(color_string);
 }
 
 static void show_prev(GtkWidget *widget, gpointer data){
@@ -196,7 +176,7 @@ static void on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data){
         	show_next(widget, data);
             break;
         default:
-            return;  /* propogate event */
+            return;
     }
 }
 
@@ -362,7 +342,6 @@ int main( int argc, char *argv[] ){
 
     gtk_grid_attach (grid, (GtkWidget*)label_frame_number, 3, 0, 4, 1);
 
-    //gtk_grid_attach (grid, (GtkWidget*)entry_dim_frames_value, 11, 0, 3, 1);
 
 	gtk_widget_show (button_mark);
 	gtk_widget_show (button_clear);
@@ -387,9 +366,6 @@ int main( int argc, char *argv[] ){
 
 	gtk_widget_show (label_frame_number);
 
-
-
-//	gtk_widget_show (frame_label_frame_number);
 
 	gtk_widget_show ((GtkWidget*)grid);
 
