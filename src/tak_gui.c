@@ -32,8 +32,11 @@ static void update_label(){
 }
 
 static void  auto_dim_run ( GtkWidget *widget, gpointer data ){
-	printf("Runs auto_dim %d !!\n",(gint)((gpointer*)data)[1]);
-	frame_auto_dim((gint)((gpointer*)data)[1], color_button, (gboolean)((gpointer*)data)[0]);
+
+	GtkEntryBuffer* buffer_dim_frames_value = (GtkEntryBuffer*)((gpointer*)data)[1];
+	gint value = atoi(gtk_entry_buffer_get_text(buffer_dim_frames_value));
+	printf("Runs auto_dim %d !!\n",value);
+	frame_auto_dim(value, color_button, (gboolean)((gpointer*)data)[0]);
 	update_label();
 }
 
@@ -44,9 +47,7 @@ static void  auto_dim_popup ( GtkWidget *widget, gpointer data ){
 
    GtkEntryBuffer* buffer_dim_frames_value;
 
-   gpointer* data_array = malloc(sizeof(gpointer[2]));
-   data_array[0] = data;
-   data_array[1] = (gpointer)25;
+
 
    dialog = gtk_dialog_new_with_buttons ("Dimmer", (GtkWindow*)window, GTK_DIALOG_DESTROY_WITH_PARENT, NULL, NULL);
    content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
@@ -57,6 +58,10 @@ static void  auto_dim_popup ( GtkWidget *widget, gpointer data ){
    buffer_dim_frames_value = gtk_entry_buffer_new("0", -1);
 
    entry_dim_frames_value = gtk_entry_new_with_buffer(GTK_ENTRY_BUFFER(buffer_dim_frames_value));
+
+   gpointer* data_array = malloc(sizeof(gpointer[2]));
+   data_array[0] = data;
+   data_array[1] = (gpointer)buffer_dim_frames_value;
 
    g_signal_connect (button_ok, "clicked", G_CALLBACK (auto_dim_run), data_array);
    g_signal_connect_swapped (button_ok, "clicked", G_CALLBACK (gtk_widget_destroy), dialog);
