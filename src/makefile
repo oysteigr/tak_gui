@@ -1,6 +1,6 @@
 CC     = gcc -Wall #-Wextra -ansi -std=c99
 CFLAGS = `pkg-config --cflags --libs gtk+-3.0`
-OBJECTS = tak_gui.o frames.o
+OBJECTS = tak_gui.o frames.o  load_save.o
 
 tak_gui: $(OBJECTS)
 	$(CC) $(OBJECTS) -o tak_gui $(CFLAGS) 

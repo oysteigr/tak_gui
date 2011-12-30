@@ -206,11 +206,11 @@ void get_short_color_string(gchar* color_string, GdkRGBA rgba){
 	char *buffer_rp, *buffer_gp, *buffer_bp;
 
 
-	sprintf(buffer_r,"%x",(int)(rgba.red*255)+256);
+	sprintf(buffer_r,"%x",(int)((rgba.red-0.0000001)*256)+256);
 	buffer_rp = strndup(buffer_r+1,2);
-	sprintf(buffer_g,"%x",(int)(rgba.green*255)+256);
+	sprintf(buffer_g,"%x",(int)((rgba.green-0.0000001)*256)+256);
 	buffer_gp = strndup(buffer_g+1,2);
-	sprintf(buffer_b,"%x",(int)(rgba.blue*255)+256);
+	sprintf(buffer_b,"%x",(int)((rgba.blue-0.0000001)*256)+256);
 	buffer_bp = strndup(buffer_b+1,2);
 	sprintf(color_string,"#%s%s%s", buffer_rp, buffer_gp, buffer_bp);
 	free(buffer_rp);
