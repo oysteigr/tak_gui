@@ -220,10 +220,11 @@ int main( int argc, char *argv[] ){
     GtkWidget *button_prev, *button_next, *button_fb, *button_ff, *button_start, *button_end;
     GtkWidget *button_dim_f, *button_dim_b;
 
+    GtkWidget *align_frames, *align_panel, *align_window;
 
 
     GtkColorButton *color_master;
-    GtkGrid *grid;
+    GtkGrid *grid_frames, *grid_panel, *grid;
 
     gint i, j;
 
@@ -257,11 +258,20 @@ int main( int argc, char *argv[] ){
 
     /* Adding grid with options */
     grid = (GtkGrid*)gtk_grid_new();
-    grid_init(grid);
-    gtk_grid_set_row_homogeneous(grid, TRUE);
-    gtk_grid_set_column_homogeneous(grid, TRUE);
+    gtk_grid_set_column_spacing(grid, 50);
 
-    gtk_container_add (GTK_CONTAINER (window), (GtkWidget*)grid);
+    grid_frames = (GtkGrid*)gtk_grid_new();
+	grid_init(grid_frames);
+	gtk_grid_set_row_homogeneous(grid_frames, TRUE);
+	gtk_grid_set_column_homogeneous(grid_frames, TRUE);
+
+	grid_panel = (GtkGrid*)gtk_grid_new();
+	gtk_grid_set_row_homogeneous(grid_panel, TRUE);
+	gtk_grid_set_column_homogeneous(grid_panel, TRUE);
+	gtk_grid_set_row_spacing(grid_panel, 10);
+
+
+
 
     button_quit = gtk_button_new_with_label("Quit");
     button_mark = gtk_button_new_with_label("Mark all");
@@ -289,6 +299,15 @@ int main( int argc, char *argv[] ){
     gtk_button_set_image ((GtkButton*)button_ff, gtk_image_new_from_file ("images/ff.png"));
     gtk_button_set_image ((GtkButton*)button_start, gtk_image_new_from_file ("images/start.png"));
     gtk_button_set_image ((GtkButton*)button_end, gtk_image_new_from_file ("images/end.png"));
+
+    align_frames = gtk_alignment_new(0.5, 0.5, 1, 1);
+    align_panel = gtk_alignment_new(0.5, 0.5, 0, 0);
+    align_window = gtk_alignment_new(0.5, 0.5, 1, 1);
+
+    gtk_container_add (GTK_CONTAINER (align_frames), (GtkWidget*)grid_frames);
+    gtk_container_add (GTK_CONTAINER (align_panel), (GtkWidget*)grid_panel);
+    gtk_container_add (GTK_CONTAINER (align_window), (GtkWidget*)grid);
+    gtk_container_add (GTK_CONTAINER (window), (GtkWidget*)align_window);
 
 
 
@@ -318,34 +337,37 @@ int main( int argc, char *argv[] ){
 
 	for(i = 0; i<10;i++){
 		for(j = 0; j<6;j++){
-			gtk_grid_attach(grid,(GtkWidget*) color_button[i][j], i, j*3+1, 1, 2);
-			gtk_grid_attach(grid,(GtkWidget*) toggle_button[i][j], i, j*3+3, 1, 1);
+			gtk_grid_attach(grid_frames,(GtkWidget*) color_button[i][j], i, j*3+1, 1, 2);
+			gtk_grid_attach(grid_frames,(GtkWidget*) toggle_button[i][j], i, j*3+3, 1, 1);
 			gtk_widget_show ((GtkWidget*)color_button[i][j]);
 			gtk_widget_show ((GtkWidget*)toggle_button[i][j]);
 		}
 	}
-    gtk_grid_attach (grid, (GtkWidget*)button_mark, 0, 20, 5, 1);
-    gtk_grid_attach (grid, (GtkWidget*)button_clear, 5, 20, 5, 1);
-    gtk_grid_attach (grid, (GtkWidget*)button_quit, 0, 21, 10, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_mark, 0, 20, 5, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_clear, 5, 20, 5, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_quit, 0, 21, 10, 1);
 
-    gtk_grid_attach (grid, (GtkWidget*)color_master, 11, 10, 1, 2);
-    gtk_grid_attach (grid, (GtkWidget*)button_apply_color, 10, 12, 3, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_prev, 2, 0, 1, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_next, 7, 0, 1, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_fb, 1, 0, 1, 1);
+	gtk_grid_attach (grid_frames, (GtkWidget*)button_ff, 8, 0, 1, 1);
+	gtk_grid_attach (grid_frames, (GtkWidget*)button_start, 0, 0, 1, 1);
+	gtk_grid_attach (grid_frames, (GtkWidget*)button_end, 9, 0, 1, 1);
 
-    gtk_grid_attach (grid, (GtkWidget*)button_update_current, 11, 5, 6, 1);
-    gtk_grid_attach (grid, (GtkWidget*)button_insert_back, 11, 6, 3, 1);
-    gtk_grid_attach (grid, (GtkWidget*)button_insert_front, 14, 6, 3, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)label_frame_number, 3, 0, 4, 1);
 
-    gtk_grid_attach (grid, (GtkWidget*)button_prev, 2, 0, 1, 1);
-    gtk_grid_attach (grid, (GtkWidget*)button_next, 7, 0, 1, 1);
-    gtk_grid_attach (grid, (GtkWidget*)button_fb, 1, 0, 1, 1);
-	gtk_grid_attach (grid, (GtkWidget*)button_ff, 8, 0, 1, 1);
-	gtk_grid_attach (grid, (GtkWidget*)button_start, 0, 0, 1, 1);
-	gtk_grid_attach (grid, (GtkWidget*)button_end, 9, 0, 1, 1);
+    gtk_grid_attach (grid_panel, (GtkWidget*)color_master, 2, 0, 2, 3);
+    gtk_grid_attach (grid_panel, (GtkWidget*)button_apply_color, 0, 3, 6, 1);
 
-	gtk_grid_attach (grid, (GtkWidget*)button_dim_f, 14, 8, 3, 1);
-	gtk_grid_attach (grid, (GtkWidget*)button_dim_b, 11, 8, 3, 1);
+    gtk_grid_attach (grid_panel, (GtkWidget*)button_update_current, 0, 5, 6, 1);
+    gtk_grid_attach (grid_panel, (GtkWidget*)button_insert_back, 0, 6, 3, 1);
+    gtk_grid_attach (grid_panel, (GtkWidget*)button_insert_front, 3, 6, 3, 1);
 
-    gtk_grid_attach (grid, (GtkWidget*)label_frame_number, 3, 0, 4, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_f, 3, 12, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_b, 0, 12, 3, 1);
+
+    gtk_grid_attach (grid, (GtkWidget*)align_frames, 0, 0, 4, 1);
+    gtk_grid_attach (grid, (GtkWidget*)align_panel, 10, 0, 4, 1);
 
 
 	gtk_widget_show (button_mark);
@@ -371,7 +393,12 @@ int main( int argc, char *argv[] ){
 
 	gtk_widget_show (label_frame_number);
 
+	gtk_widget_show ((GtkWidget*)align_frames);
+	gtk_widget_show ((GtkWidget*)align_panel);
+	gtk_widget_show ((GtkWidget*)align_window);
 
+	gtk_widget_show ((GtkWidget*)grid_frames);
+	gtk_widget_show ((GtkWidget*)grid_panel);
 	gtk_widget_show ((GtkWidget*)grid);
 
 	gtk_widget_show (window);
