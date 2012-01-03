@@ -40,7 +40,7 @@ void frame_header_init(){
 
 }
 
-void frame_delete(Frame *delete_frame){
+void frame_free(Frame *delete_frame){
 	int i, j;
     for(i = 0; i<10; i++){
     	for(j = 0; j<6; j++){
@@ -50,6 +50,10 @@ void frame_delete(Frame *delete_frame){
     }
     free(delete_frame->frame);
 	free(delete_frame);
+}
+
+void frame_delete(){
+
 }
 
 void frame_update_current(GtkColorButton*** color_buttons){
@@ -121,9 +125,6 @@ void frame_insert_back(GtkColorButton*** color_buttons){
 	printf("inserted back\n");
 }
 
-void frame_remove(){
-
-}
 
 void frame_load_colors(GtkColorButton*** color_buttons){
 	int i, j;
@@ -169,10 +170,13 @@ void frame_auto_dim(gint number_of_steps, GtkColorButton*** color_buttons, gbool
 	int i, j, k;
 	GdkRGBA rgba_temp, rgba_start, rgba_end;
 	Frame *frame_start, *frame_end;
-
 	frame_start = frame_header->current_frame;
-	if(forward){frame_end = frame_header->current_frame->next_frame;}
-	else{frame_end = frame_header->current_frame->prev_frame;}
+	if(forward){
+		frame_end = frame_header->current_frame->next_frame;
+	}
+	else{
+		frame_end = frame_header->current_frame->prev_frame;
+	}
 
 	for(k = 1; k<number_of_steps - 1; k++){
 		if(forward){frame_create_front_frame();}
@@ -198,6 +202,19 @@ void frame_auto_dim(gint number_of_steps, GtkColorButton*** color_buttons, gbool
 		frame_header->selected_number--;
 	}
 	frame_load_colors(color_buttons);
+}
+
+void frame_store_frame(char string[],gboolean create_new){
+	int i,j;
+	if(create_new){
+		frame_create_back_frame();
+	}
+	printf("The string:%s\n",string);
+	for(i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			strcpy(frame_header->current_frame->frame[i][j],strndup(string+((i*6+j)*7),7));
+		}
+	}
 }
 
 void get_short_color_string(gchar* color_string, GdkRGBA rgba){

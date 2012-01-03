@@ -37,6 +37,7 @@ static void  auto_dim_run ( GtkWidget *widget, gpointer data ){
 	GtkEntryBuffer* buffer_dim_frames_value = (GtkEntryBuffer*)((gpointer*)data)[1];
 	gint value = atoi(gtk_entry_buffer_get_text(buffer_dim_frames_value));
 	printf("Runs auto_dim %d !!\n",value);
+	value = value*25/10;
 	frame_auto_dim(value, color_button, (gboolean)((gpointer*)data)[0]);
 	update_label();
 	free(data);
@@ -49,6 +50,12 @@ static void  auto_dim_popup ( GtkWidget *widget, gpointer data ){
 
    GtkEntryBuffer* buffer_dim_frames_value;
 
+   if((gboolean)data && frame_header->current_frame->next_frame == NULL){
+	   return;
+   }
+   if(!(gboolean)data && frame_header->current_frame->prev_frame == NULL){
+	   return;
+   }
 
 
    dialog = gtk_dialog_new_with_buttons ("Dimmer", (GtkWindow*)window, GTK_DIALOG_DESTROY_WITH_PARENT, NULL, NULL);
@@ -347,7 +354,7 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_dim_b, "clicked", G_CALLBACK (auto_dim_popup), (gpointer) FALSE);
     g_signal_connect (button_save, "clicked", G_CALLBACK (save_to_file), "test");
     g_signal_connect (button_save_as, "clicked", G_CALLBACK (save_as_popup), NULL);
-    //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
+    g_signal_connect (button_load, "clicked", G_CALLBACK (load_read_file), "farger.rts");
     //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
     //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
     //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
@@ -419,7 +426,7 @@ int main( int argc, char *argv[] ){
 
 	gtk_widget_show (button_save);
 	gtk_widget_show (button_save_as);
-//	gtk_widget_show (button_load);
+	gtk_widget_show (button_load);
 
 //	gtk_widget_show (button_delete);
 //	gtk_widget_show (button_delete_multiple);

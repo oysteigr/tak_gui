@@ -45,7 +45,7 @@ void  save_as_popup ( GtkWidget *widget, gpointer data ){
 
    button_ok = gtk_dialog_add_button ((GtkDialog*)dialog_save_as, "Save as", (gint)GTK_STOCK_OK);
 
-   buffer_file_name = gtk_entry_buffer_new("0", -1);
+   buffer_file_name = gtk_entry_buffer_new("New_file", -1);
 
    entry_file_name = gtk_entry_new_with_buffer(GTK_ENTRY_BUFFER(buffer_file_name));
 
@@ -56,4 +56,23 @@ void  save_as_popup ( GtkWidget *widget, gpointer data ){
    gtk_container_add (GTK_CONTAINER (content_area), entry_file_name);
 
    gtk_widget_show_all (dialog_save_as);
+}
+
+
+
+void load_read_file( GtkWidget *widget, gpointer data){
+
+	FILE *in = fopen((char*)data, "rt");
+
+	char buffer[500];
+	fgets(buffer, 500, in);
+	frame_store_frame(buffer, FALSE);
+
+	while(fgets(buffer, 500, in)!=NULL){
+		frame_store_frame(buffer, TRUE);
+	}
+	printf("DUUUUUUD\n");
+	fclose(in);
+	printf("DUUUUUUDSS\n");
+	return;
 }
