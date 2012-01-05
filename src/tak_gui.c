@@ -354,7 +354,7 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_dim_b, "clicked", G_CALLBACK (auto_dim_popup), (gpointer) FALSE);
     g_signal_connect (button_save, "clicked", G_CALLBACK (save_to_file), "test");
     g_signal_connect (button_save_as, "clicked", G_CALLBACK (save_as_popup), NULL);
-    g_signal_connect (button_load, "clicked", G_CALLBACK (load_read_file), "farger.rts");
+    g_signal_connect (button_load, "clicked", G_CALLBACK (load_select_file_dialog), NULL);
     //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
     //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
     //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);

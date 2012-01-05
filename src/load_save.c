@@ -58,11 +58,9 @@ void  save_as_popup ( GtkWidget *widget, gpointer data ){
    gtk_widget_show_all (dialog_save_as);
 }
 
+void load_read_file(char *filename){
 
-
-void load_read_file( GtkWidget *widget, gpointer data){
-
-	FILE *in = fopen((char*)data, "rt");
+	FILE *in = fopen(filename, "rt");
 
 	char buffer[500];
 	fgets(buffer, 500, in);
@@ -71,8 +69,22 @@ void load_read_file( GtkWidget *widget, gpointer data){
 	while(fgets(buffer, 500, in)!=NULL){
 		frame_store_frame(buffer, TRUE);
 	}
-	printf("DUUUUUUD\n");
 	fclose(in);
-	printf("DUUUUUUDSS\n");
 	return;
+}
+
+void load_select_file_dialog( GtkWidget *widget, gpointer data){
+	GtkWidget * file_load_dialog = gtk_file_chooser_dialog_new("Choose show to load..", (GtkWindow*) gtk_widget_get_parent_window(widget), GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+	GtkFileFilter* file_filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(file_filter, "Regi tak show");
+	gtk_file_filter_add_pattern(file_filter, "*.rts");
+	gtk_file_chooser_set_filter((GtkFileChooser*)file_load_dialog, file_filter);
+	gtk_file_chooser_set_current_folder_uri((GtkFileChooser*)file_load_dialog, "/workspace/tak_gui/src");
+	if (gtk_dialog_run (GTK_DIALOG (file_load_dialog)) == GTK_RESPONSE_ACCEPT){
+	    char *filename;
+	    filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (file_load_dialog));
+	    load_read_file(filename);
+	    g_free (filename);
+	}
+	gtk_widget_destroy (file_load_dialog);
 }
