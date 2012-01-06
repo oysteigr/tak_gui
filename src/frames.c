@@ -36,7 +36,6 @@ void frame_header_init(){
 	frame_header->end_frame = new_frame;
 	frame_header->current_frame = new_frame;
 	frame_header->selected_number = 1;
-	printf("ran frame_header_init\n");
 
 }
 
@@ -65,7 +64,6 @@ void frame_update_current(GtkColorButton*** color_buttons){
 			get_short_color_string(frame_header->current_frame->frame[i][j], rgba);
 		}
 	}
-	printf("updated current\n");
 }
 
 void frame_create_front_frame(){
@@ -91,12 +89,7 @@ void frame_create_front_frame(){
 void frame_insert_front(GtkColorButton*** color_buttons){
 
 	frame_create_front_frame();
-
 	frame_update_current(color_buttons);
-
-
-	printf("inserted front\n");
-
 
 }
 
@@ -121,8 +114,6 @@ void frame_insert_back(GtkColorButton*** color_buttons){
 	frame_create_back_frame();
 
 	frame_update_current(color_buttons);
-
-	printf("inserted back\n");
 }
 
 
@@ -135,17 +126,14 @@ void frame_load_colors(GtkColorButton*** color_buttons){
 			gtk_color_button_set_rgba(color_buttons[i][j], &rgba);
 		}
 	}
-	printf("loaded colors\n");
 }
 
 void frame_show_prev(GtkColorButton*** color_buttons){
 	if(frame_header->current_frame->prev_frame == NULL){
-		printf("show next but prev frame=NULL\n");
 		return;
 	}
 	else{
 		frame_header->current_frame = frame_header->current_frame->prev_frame;
-		printf("show prev\n");
 		frame_load_colors(color_buttons);
 		frame_header->selected_number--;
 	}
@@ -154,12 +142,10 @@ void frame_show_prev(GtkColorButton*** color_buttons){
 
 void frame_show_next(GtkColorButton*** color_buttons){
 	if(frame_header->current_frame->next_frame == NULL){
-		printf("show next but next frame=NULL\n");
 		return;
 	}
 	else{
 		frame_header->current_frame = frame_header->current_frame->next_frame;
-		printf("show next\n");
 		frame_load_colors(color_buttons);
 		frame_header->selected_number++;
 	}
@@ -207,9 +193,8 @@ void frame_auto_dim(gint number_of_steps, GtkColorButton*** color_buttons, gbool
 void frame_store_frame(char string[],gboolean create_new){
 	int i,j;
 	if(create_new){
-		frame_create_back_frame();
+		frame_create_front_frame();
 	}
-	printf("The string:%s\n",string);
 	for(i = 0; i<10; i++){
 		for(j = 0; j<6; j++){
 			strcpy(frame_header->current_frame->frame[i][j],strndup(string+((i*6+j)*7),7));

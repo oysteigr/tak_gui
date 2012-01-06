@@ -13,212 +13,8 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-
-#include "frames.h"
-#include "load_save.h"
-
-GtkColorButton*** color_button;
-GtkToggleButton*** toggle_button;
-gboolean*** bool_marked;
-
-GtkWidget *label_frame_number;
-GtkWidget *window;
-
-
-
-static void update_label(){
-	gchar label[20];
-	sprintf(label,"Frame %d of %d",frame_header->selected_number,frame_header->counter);
-	gtk_label_set_text ((GtkLabel*)label_frame_number, label);
-}
-
-static void  auto_dim_run ( GtkWidget *widget, gpointer data ){
-
-	GtkEntryBuffer* buffer_dim_frames_value = (GtkEntryBuffer*)((gpointer*)data)[1];
-	gint value = atoi(gtk_entry_buffer_get_text(buffer_dim_frames_value));
-	printf("Runs auto_dim %d !!\n",value);
-	value = value*25/10;
-	frame_auto_dim(value, color_button, (gboolean)((gpointer*)data)[0]);
-	update_label();
-	free(data);
-}
-
-static void  auto_dim_popup ( GtkWidget *widget, gpointer data ){
-   GtkWidget *dialog, *label, *content_area;
-   GtkWidget *button_ok;
-   GtkWidget *entry_dim_frames_value;
-
-   GtkEntryBuffer* buffer_dim_frames_value;
-
-   if((gboolean)data && frame_header->current_frame->next_frame == NULL){
-	   return;
-   }
-   if(!(gboolean)data && frame_header->current_frame->prev_frame == NULL){
-	   return;
-   }
-
-
-   dialog = gtk_dialog_new_with_buttons ("Dimmer", (GtkWindow*)window, GTK_DIALOG_DESTROY_WITH_PARENT, NULL, NULL);
-   content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-   label = gtk_label_new ("Number of deciseconds");
-
-   button_ok = gtk_dialog_add_button ((GtkDialog*)dialog, "DIM", (gint)GTK_STOCK_OK);
-
-   buffer_dim_frames_value = gtk_entry_buffer_new("0", -1);
-
-   entry_dim_frames_value = gtk_entry_new_with_buffer(GTK_ENTRY_BUFFER(buffer_dim_frames_value));
-
-   gpointer* data_array = malloc(sizeof(gpointer[2]));
-   data_array[0] = data;
-   data_array[1] = (gpointer)buffer_dim_frames_value;
-
-   g_signal_connect (button_ok, "clicked", G_CALLBACK (auto_dim_run), data_array);
-   g_signal_connect_swapped (button_ok, "clicked", G_CALLBACK (gtk_widget_destroy), dialog);
-
-   gtk_container_add (GTK_CONTAINER (content_area), label);
-   gtk_container_add (GTK_CONTAINER (content_area), entry_dim_frames_value);
-
-   gtk_widget_show_all (dialog);
-}
-
-
-
-
-static void mark( GtkWidget *widget, gpointer data ){
-	int k = atoi((char*)data);
-	*bool_marked[k%10][k/10] = gtk_toggle_button_get_active((GtkToggleButton*) widget);
-    g_print ("Hello again - %s was pressed\n", (char *) data);
-}
-static void mark_all( GtkWidget *widget, gpointer data ){
-	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
-			gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
-			*bool_marked[i][j] = TRUE;
-		}
-	}
-    return;
-}
-static void clear_all( GtkWidget *widget, gpointer data ){
-	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
-			gtk_toggle_button_set_active(toggle_button[i][j], FALSE);
-			*bool_marked[i][j] = FALSE;
-		}
-	}
-    return;
-}
-
-static void apply_color( GtkWidget *widget, gpointer data ){
-	int i,j;
-	GdkRGBA rgba;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
-			if(*bool_marked[i][j]){
-				gtk_color_button_get_rgba((GtkColorButton*)data,&rgba);
-				gtk_color_button_set_rgba(color_button[i][j], &rgba);
-
-			}
-		}
-	}
-    return;
-}
-
-static gboolean delete_event( GtkWidget *widget, GdkEvent  *event, gpointer data ){
-    gtk_main_quit ();
-    return FALSE;
-}
-
-
-static void update_current(GtkWidget *widget, gpointer data){
-	int i, j;
-	frame_update_current(color_button);
-	printf("[%d]",frame_header->current_frame->id);
-	printf("[next:%p]",frame_header->current_frame->next_frame);
-	printf("[prev:%p]",frame_header->current_frame->prev_frame);
-	for(i = 0; i<6; i++){
-		for(j = 0; j<10; j++){
-			printf("[%s]",frame_header->current_frame->frame[j][i]);
-		}
-		printf("\n");
-	}
-
-}
-static void insert_before(GtkWidget *widget, gpointer data){
-	frame_insert_front(color_button);
-
-	update_label();
-}
-static void insert_behind(GtkWidget *widget, gpointer data){
-	frame_insert_back(color_button);
-
-	update_label();
-}
-
-static void color_changed(GtkWidget *widget, gpointer data){
-	printf("Color_changed_starts\n");
-	int i, j;
-	GdkRGBA rgba;
-	gchar color_string[13];
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
-			gtk_color_button_get_rgba(color_button[i][j], &rgba);
-			get_short_color_string(color_string, rgba);
-			gtk_button_set_label ((GtkButton*)toggle_button[i][j], color_string);
-		}
-	}
-}
-
-static void show_prev(GtkWidget *widget, gpointer data){
-	frame_show_prev(color_button);
-	color_changed(widget, NULL);
-	update_label();
-}
-
-static void show_next(GtkWidget *widget, gpointer data){
-	frame_show_next(color_button);
-	color_changed(widget, NULL);
-	update_label();
-}
-
-static void on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data){
-    switch (event->keyval)
-    {
-        case GDK_KEY_Left:
-        	show_prev(widget, data);
-            break;
-        case GDK_KEY_Right:
-        	show_next(widget, data);
-            break;
-        default:
-            return;
-    }
-}
-
-void grid_init(GtkGrid *grid){
-	GdkRGBA rgba;
-    char *strpoint;
-    int i, j;
-    gdk_rgba_parse(&rgba,"#000000");
-	for(i = 0; i<10;i++){
-		for(j = 0; j<6;j++){
-			strpoint = malloc(sizeof(char[12]));
-			sprintf(strpoint, "%d",j*10+i);
-
-			color_button[i][j] = (GtkColorButton*)gtk_color_button_new ();
-			toggle_button[i][j] = (GtkToggleButton*)gtk_toggle_button_new_with_label("#000000");
-			*bool_marked[i][j] = FALSE;
-
-			gtk_color_button_set_rgba(color_button[i][j], &rgba);
-			g_signal_connect ((GtkWidget*)color_button[i][j], "color-set", G_CALLBACK (color_changed), (gpointer) strpoint);
-			g_signal_connect ((GtkWidget*)toggle_button[i][j], "clicked", G_CALLBACK (mark), (gpointer) strpoint);
-
-		}
-	}
-}
-
-
+#include "callbacks.h"
+#include "global_variables.h"
 
 
 
@@ -258,15 +54,13 @@ int main( int argc, char *argv[] ){
     	  }
     }
 
-    printf("etter\n");
-    frame_header_init();
     gtk_init (&argc, &argv);
 
 
     /* Adding window with options */
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title (GTK_WINDOW (window), "Table");
-    g_signal_connect (window, "delete-event", G_CALLBACK (delete_event), NULL);
+    g_signal_connect (window, "delete-event", G_CALLBACK (callback_delete_event), NULL);
     gtk_container_set_border_width (GTK_CONTAINER (window), 20);
 
     /* Adding grid with options */
@@ -276,7 +70,7 @@ int main( int argc, char *argv[] ){
     gtk_grid_set_column_spacing(grid, 20);
 
     grid_frames = (GtkGrid*)gtk_grid_new();
-	grid_init(grid_frames);
+
 	gtk_grid_set_row_homogeneous(grid_frames, TRUE);
 	gtk_grid_set_column_homogeneous(grid_frames, TRUE);
 
@@ -285,7 +79,7 @@ int main( int argc, char *argv[] ){
 	gtk_grid_set_column_homogeneous(grid_panel, TRUE);
 	gtk_grid_set_row_spacing(grid_panel, 10);
 
-
+	callback_init();
 
 
     button_quit = gtk_button_new_with_label("Quit");
@@ -334,33 +128,40 @@ int main( int argc, char *argv[] ){
 
 
     label_frame_number = gtk_label_new ("Frame 1 of 1");
-    update_label();
 
 
 
     color_master = (GtkColorButton*)gtk_color_button_new ();
 
-    g_signal_connect (button_mark, "clicked", G_CALLBACK (mark_all), NULL);
-    g_signal_connect (button_clear, "clicked", G_CALLBACK (clear_all), NULL);
-    g_signal_connect (button_quit, "clicked", G_CALLBACK (delete_event), NULL);
-    g_signal_connect (button_apply_color, "clicked", G_CALLBACK (apply_color), (gpointer) color_master);
-    g_signal_connect (button_apply_color, "clicked", G_CALLBACK (color_changed), NULL);
-    g_signal_connect (button_update_current, "clicked", G_CALLBACK (update_current), NULL);
-    g_signal_connect (button_prev, "clicked", G_CALLBACK (show_prev), NULL);
-    g_signal_connect (button_next, "clicked", G_CALLBACK (show_next), NULL);
-    g_signal_connect (button_insert_back, "clicked", G_CALLBACK (insert_behind), NULL);
-    g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
-    g_signal_connect (button_dim_f, "clicked", G_CALLBACK (auto_dim_popup), (gpointer) TRUE);
-    g_signal_connect (button_dim_b, "clicked", G_CALLBACK (auto_dim_popup), (gpointer) FALSE);
-    g_signal_connect (button_save, "clicked", G_CALLBACK (save_to_file), "test");
-    g_signal_connect (button_save_as, "clicked", G_CALLBACK (save_as_popup), NULL);
-    g_signal_connect (button_load, "clicked", G_CALLBACK (load_select_file_dialog), NULL);
-    //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
-    //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
-    //g_signal_connect (button_insert_front, "clicked", G_CALLBACK (insert_before), NULL);
+    g_signal_connect (button_mark, "clicked", G_CALLBACK (callback_mark_all), NULL);
+    g_signal_connect (button_clear, "clicked", G_CALLBACK (callback_clear_all), NULL);
+    g_signal_connect (button_quit, "clicked", G_CALLBACK (callback_delete_event), NULL);
+
+    g_signal_connect (button_apply_color, "clicked", G_CALLBACK (callback_apply_color), (gpointer) color_master);
+    g_signal_connect (button_apply_color, "clicked", G_CALLBACK (callback_color_changed), NULL);
+    g_signal_connect (button_update_current, "clicked", G_CALLBACK (callback_update_current), NULL);
+
+    g_signal_connect (button_prev, "clicked", G_CALLBACK (callback_show_prev), NULL);
+    g_signal_connect (button_next, "clicked", G_CALLBACK (callback_show_next), NULL);
+    g_signal_connect (button_fb, "clicked", G_CALLBACK (callback_jump_prev), NULL);
+    g_signal_connect (button_ff, "clicked", G_CALLBACK (callback_jump_next), NULL);
+    g_signal_connect (button_start, "clicked", G_CALLBACK (callback_jump_start), NULL);
+    g_signal_connect (button_end, "clicked", G_CALLBACK (callback_jump_end), NULL);
+
+    g_signal_connect (button_insert_back, "clicked", G_CALLBACK (callback_insert_behind), NULL);
+    g_signal_connect (button_insert_front, "clicked", G_CALLBACK (callback_insert_before), NULL);
+
+    g_signal_connect (button_dim_f, "clicked", G_CALLBACK (callback_auto_dim_popup), (gpointer) TRUE);
+    g_signal_connect (button_dim_b, "clicked", G_CALLBACK (callback_auto_dim_popup), (gpointer) FALSE);
+
+    g_signal_connect (button_save, "clicked", G_CALLBACK (callback_save), "test");
+    g_signal_connect (button_save_as, "clicked", G_CALLBACK (callback_save_as), NULL);
+    g_signal_connect (button_load, "clicked", G_CALLBACK (callback_load), NULL);
 
 
-    g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
+
+
+    g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (callback_on_key_press), NULL);
 
 
 	for(i = 0; i<10;i++){

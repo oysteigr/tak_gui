@@ -30,6 +30,7 @@ void frame_delete();
 
 void frame_show_prev(GtkColorButton*** color_buttons);
 void frame_show_next(GtkColorButton*** color_buttons);
+void frame_load_colors(GtkColorButton*** color_buttons);
 
 void frame_auto_dim(gint number_of_steps, GtkColorButton*** color_buttons, gboolean forward);
 

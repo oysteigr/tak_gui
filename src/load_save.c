@@ -5,6 +5,7 @@
 
 #include "frames.h"
 #include "load_save.h"
+#include "global_variables.h"
 
 
 void save_to_file( GtkWidget *widget, gpointer data){
@@ -39,7 +40,7 @@ void  save_as_popup ( GtkWidget *widget, gpointer data ){
 
    GtkEntryBuffer* buffer_file_name;
 
-   dialog_save_as = gtk_dialog_new_with_buttons ("Save as..",(GtkWindow*) gtk_widget_get_parent_window(widget), GTK_DIALOG_DESTROY_WITH_PARENT, NULL, NULL);
+   dialog_save_as = gtk_dialog_new_with_buttons ("Save as..",(GtkWindow*) window, GTK_DIALOG_DESTROY_WITH_PARENT, NULL, NULL);
    content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog_save_as));
    label = gtk_label_new ("Enter file name");
 
@@ -74,12 +75,19 @@ void load_read_file(char *filename){
 }
 
 void load_select_file_dialog( GtkWidget *widget, gpointer data){
-	GtkWidget * file_load_dialog = gtk_file_chooser_dialog_new("Choose show to load..", (GtkWindow*) gtk_widget_get_parent_window(widget), GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget * file_load_dialog = gtk_file_chooser_dialog_new("Choose show to load..", (GtkWindow*) window, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 	GtkFileFilter* file_filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(file_filter, "Regi tak show");
 	gtk_file_filter_add_pattern(file_filter, "*.rts");
 	gtk_file_chooser_set_filter((GtkFileChooser*)file_load_dialog, file_filter);
-	gtk_file_chooser_set_current_folder_uri((GtkFileChooser*)file_load_dialog, "/workspace/tak_gui/src");
+
+	gchar* current_path_c = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER (file_load_dialog) );
+	GString* current_path = g_string_new ( current_path_c );
+	gchar* rel_path = "/workspace/tak_gui/src";
+	g_string_append ( current_path, rel_path );
+	printf("%s\n",current_path_c);
+	gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER (file_load_dialog), current_path->str);
+
 	if (gtk_dialog_run (GTK_DIALOG (file_load_dialog)) == GTK_RESPONSE_ACCEPT){
 	    char *filename;
 	    filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (file_load_dialog));
