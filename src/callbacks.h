@@ -27,3 +27,6 @@ void callback_on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data
 void callback_save( GtkWidget *widget, gpointer data);
 void callback_save_as( GtkWidget *widget, gpointer data);
 void callback_load( GtkWidget *widget, gpointer data);
+
+void callback_delete_current( GtkWidget *widget, gpointer data);
+void callback_delete_all( GtkWidget *widget, gpointer data);

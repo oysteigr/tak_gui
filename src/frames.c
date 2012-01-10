@@ -3,7 +3,26 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "frames.h"
+#include "global_variables.h"
+
+void get_short_color_string(gchar* color_string, GdkRGBA rgba){
+
+	char buffer_r [33], buffer_g [33], buffer_b [33];
+	char *buffer_rp, *buffer_gp, *buffer_bp;
+
+
+	sprintf(buffer_r,"%x",(int)((rgba.red-0.0000001)*256)+256);
+	buffer_rp = strndup(buffer_r+1,2);
+	sprintf(buffer_g,"%x",(int)((rgba.green-0.0000001)*256)+256);
+	buffer_gp = strndup(buffer_g+1,2);
+	sprintf(buffer_b,"%x",(int)((rgba.blue-0.0000001)*256)+256);
+	buffer_bp = strndup(buffer_b+1,2);
+	sprintf(color_string,"#%s%s%s", buffer_rp, buffer_gp, buffer_bp);
+	free(buffer_rp);
+	free(buffer_gp);
+	free(buffer_bp);
+	return;
+}
 
 Frame* frame_new(){
 	int i, j;
@@ -51,8 +70,30 @@ void frame_free(Frame *delete_frame){
 	free(delete_frame);
 }
 
-void frame_delete(){
-
+gboolean frame_delete(){
+	Frame* frame_to_delete = frame_header->current_frame;
+	if(frame_header->current_frame->next_frame == NULL && frame_header->current_frame->prev_frame == NULL){
+		return FALSE;
+	}
+	else if(frame_header->current_frame->next_frame == NULL){
+		frame_header->current_frame = frame_header->current_frame->prev_frame;
+		frame_header->current_frame->next_frame = NULL;
+		frame_header->selected_number--;
+		frame_header->end_frame = frame_header->current_frame;
+	}
+	else if(frame_header->current_frame->prev_frame == NULL){
+		frame_header->current_frame = frame_header->current_frame->next_frame;
+		frame_header->current_frame->prev_frame = NULL;
+		frame_header->start_frame = frame_header->current_frame;
+	}
+	else{
+		frame_header->current_frame = frame_header->current_frame->next_frame;
+		frame_to_delete->next_frame->prev_frame = frame_to_delete->prev_frame;
+		frame_to_delete->prev_frame->next_frame = frame_to_delete->next_frame;
+	}
+	frame_header->counter--;
+	frame_free(frame_to_delete);
+	return TRUE;
 }
 
 void frame_update_current(GtkColorButton*** color_buttons){
@@ -202,21 +243,11 @@ void frame_store_frame(char string[],gboolean create_new){
 	}
 }
 
-void get_short_color_string(gchar* color_string, GdkRGBA rgba){
-
-	char buffer_r [33], buffer_g [33], buffer_b [33];
-	char *buffer_rp, *buffer_gp, *buffer_bp;
-
-
-	sprintf(buffer_r,"%x",(int)((rgba.red-0.0000001)*256)+256);
-	buffer_rp = strndup(buffer_r+1,2);
-	sprintf(buffer_g,"%x",(int)((rgba.green-0.0000001)*256)+256);
-	buffer_gp = strndup(buffer_g+1,2);
-	sprintf(buffer_b,"%x",(int)((rgba.blue-0.0000001)*256)+256);
-	buffer_bp = strndup(buffer_b+1,2);
-	sprintf(color_string,"#%s%s%s", buffer_rp, buffer_gp, buffer_bp);
-	free(buffer_rp);
-	free(buffer_gp);
-	free(buffer_bp);
-	return;
+void frame_make_black(){
+	int i,j;
+	for(i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			strcpy(frame_header->current_frame->frame[i][j], "#000000");
+		}
+	}
 }

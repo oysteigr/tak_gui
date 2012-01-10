@@ -27,7 +27,7 @@ int main( int argc, char *argv[] ){
     GtkWidget *button_prev, *button_next, *button_fb, *button_ff, *button_start, *button_end;
     GtkWidget *button_dim_f, *button_dim_b;
     GtkWidget *button_save, *button_save_as, *button_load;
-    GtkWidget *button_delete, *button_delete_multiple;
+    GtkWidget *button_delete, *button_delete_multiple, *button_delete_all;
 
     GtkWidget *align_frames, *align_panel, *align_window;
 
@@ -84,7 +84,7 @@ int main( int argc, char *argv[] ){
 
     button_quit = gtk_button_new_with_label("Quit");
     button_mark = gtk_button_new_with_label("Mark all");
-    button_clear = gtk_button_new_with_label("Clear all");
+    button_clear = gtk_button_new_with_label("Unmark all");
 
     button_apply_color = gtk_button_new_with_label("Apply to marked");
 
@@ -108,6 +108,7 @@ int main( int argc, char *argv[] ){
 
     button_delete = gtk_button_new_with_label("Delete current");
     button_delete_multiple = gtk_button_new_with_label("Delete mulitple");
+    button_delete_all = gtk_button_new_with_label("Delete all");
 
     gtk_button_set_image ((GtkButton*)button_prev, gtk_image_new_from_file ("images/prev.png"));
     gtk_button_set_image ((GtkButton*)button_next, gtk_image_new_from_file ("images/next.png"));
@@ -158,6 +159,8 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_save_as, "clicked", G_CALLBACK (callback_save_as), NULL);
     g_signal_connect (button_load, "clicked", G_CALLBACK (callback_load), NULL);
 
+    g_signal_connect (button_delete, "clicked", G_CALLBACK (callback_delete_current), NULL);
+    g_signal_connect (button_delete_all, "clicked", G_CALLBACK (callback_delete_all), NULL);
 
 
 
@@ -201,6 +204,7 @@ int main( int argc, char *argv[] ){
 
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete, 0, 7, 6, 1);
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete_multiple, 0, 8, 6, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete_all, 0, 9, 6, 1);
 
     gtk_grid_attach (grid, (GtkWidget*)align_frames, 0, 0, 10, 21);
     gtk_grid_attach (grid, (GtkWidget*)align_panel, 10, 0, 6, 21);
@@ -229,8 +233,9 @@ int main( int argc, char *argv[] ){
 	gtk_widget_show (button_save_as);
 	gtk_widget_show (button_load);
 
-//	gtk_widget_show (button_delete);
+	gtk_widget_show (button_delete);
 //	gtk_widget_show (button_delete_multiple);
+	gtk_widget_show (button_delete_all);
 
 	gtk_widget_show ((GtkWidget*)color_master);
 	gtk_widget_show (button_apply_color);

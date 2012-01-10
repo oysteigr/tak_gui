@@ -220,3 +220,23 @@ void callback_load( GtkWidget *widget, gpointer data){
 	frame_load_colors(color_button);
 	window_update_label();
 }
+
+void callback_delete_current( GtkWidget *widget, gpointer data){
+	if(frame_header->current_frame->next_frame == NULL && frame_header->current_frame->prev_frame == NULL){
+		window_popup_warning("Can't delete the last frame!");
+	}
+	else{
+		frame_delete();
+		frame_load_colors(color_button);
+		callback_color_changed(widget, data);
+		window_update_label();
+	}
+}
+
+void callback_delete_all( GtkWidget *widget, gpointer data){
+	while(frame_delete());
+	frame_make_black();
+	frame_load_colors(color_button);
+	callback_color_changed(widget, data);
+	window_update_label();
+}
