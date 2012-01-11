@@ -1,0 +1,28 @@
+.label_frame_number{
+	color: #ff0000;
+}
+
+GtkButton{
+    color: #ff0000;
+}
+GtkLabel{
+    color: #ff0000;
+}
+GtkWindow{
+	background-image: -gtk-gradient (linear, left top, 
+	left bottom, 
+	from (#333333),
+    to (#000000));
+}
+
+#window GtkGrid GtkGrid GtkButton{
+	color: #ff0000;
+}
+#label_frame_number{
+	color: #ff0000;
+}
+GtkWindow .button{
+	color: #ff0000;
+}
+
+

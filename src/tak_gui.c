@@ -32,9 +32,13 @@ int main( int argc, char *argv[] ){
 
     GtkWidget *align_frames, *align_panel, *align_window;
 
+    GtkCssProvider* css_theme;
+    GtkStyleContext* style_context;
 
     GtkColorButton *color_master;
     GtkGrid *grid_frames, *grid_panel, *grid;
+
+
 
     gint i, j;
 
@@ -55,11 +59,12 @@ int main( int argc, char *argv[] ){
     	  }
     }
 
-    gtk_init (&argc, &argv);
+    gtk_init(&argc, &argv);
+
 
 
     /* Adding window with options */
-    window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    window = (GtkWindow*)gtk_window_new (GTK_WINDOW_TOPLEVEL);
     g_signal_connect (window, "delete-event", G_CALLBACK (callback_delete_event), NULL);
     gtk_container_set_border_width (GTK_CONTAINER (window), 20);
     /* Adding grid with options */
@@ -130,7 +135,11 @@ int main( int argc, char *argv[] ){
     gtk_container_add (GTK_CONTAINER (align_window), (GtkWidget*)grid);
     gtk_container_add (GTK_CONTAINER (window), (GtkWidget*)align_window);
 
+    css_theme = gtk_css_provider_new();
 
+    gtk_css_provider_load_from_path(css_theme, "src/themes/regi.css", NULL);
+    style_context = gtk_widget_get_style_context((GtkWidget*)window);
+    gtk_style_context_add_provider (style_context, (GtkStyleProvider*)css_theme, GTK_STYLE_PROVIDER_PRIORITY_USER );
 
     label_frame_number = gtk_label_new ("Frame 1 of 1");
 
@@ -270,7 +279,7 @@ int main( int argc, char *argv[] ){
 	gtk_widget_show ((GtkWidget*)grid_panel);
 	gtk_widget_show ((GtkWidget*)grid);
 
-	gtk_widget_show (window);
+	gtk_widget_show ((GtkWidget*)window);
 
 
     gtk_main ();
