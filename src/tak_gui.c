@@ -114,12 +114,12 @@ int main( int argc, char *argv[] ){
     button_shift_left = gtk_button_new_with_label("Shift left");
     button_shift_right = gtk_button_new_with_label("Shift right");
 
-    gtk_button_set_image ((GtkButton*)button_prev, gtk_image_new_from_file ("images/prev.png"));
-    gtk_button_set_image ((GtkButton*)button_next, gtk_image_new_from_file ("images/next.png"));
-    gtk_button_set_image ((GtkButton*)button_fb, gtk_image_new_from_file ("images/fb.png"));
-    gtk_button_set_image ((GtkButton*)button_ff, gtk_image_new_from_file ("images/ff.png"));
-    gtk_button_set_image ((GtkButton*)button_start, gtk_image_new_from_file ("images/start.png"));
-    gtk_button_set_image ((GtkButton*)button_end, gtk_image_new_from_file ("images/end.png"));
+    gtk_button_set_image ((GtkButton*)button_prev, gtk_image_new_from_file ("src/images/prev.png"));
+    gtk_button_set_image ((GtkButton*)button_next, gtk_image_new_from_file ("src/images/next.png"));
+    gtk_button_set_image ((GtkButton*)button_fb, gtk_image_new_from_file ("src/images/fb.png"));
+    gtk_button_set_image ((GtkButton*)button_ff, gtk_image_new_from_file ("src/images/ff.png"));
+    gtk_button_set_image ((GtkButton*)button_start, gtk_image_new_from_file ("src/images/start.png"));
+    gtk_button_set_image ((GtkButton*)button_end, gtk_image_new_from_file ("src/images/end.png"));
 
     align_frames = gtk_alignment_new(0.5, 0.5, 0, 0);
     align_panel = gtk_alignment_new(0.5, 0.5, 1, 0);
