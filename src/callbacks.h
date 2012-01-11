@@ -4,7 +4,7 @@ void callback_auto_dim_run ( GtkWidget *widget, gpointer data );
 void callback_auto_dim_popup ( GtkWidget *widget, gpointer data );
 void callback_mark( GtkWidget *widget, gpointer data );
 void callback_mark_all( GtkWidget *widget, gpointer data );
-void callback_clear_all( GtkWidget *widget, gpointer data );
+void callback_unmark_all( GtkWidget *widget, gpointer data );
 void callback_apply_color( GtkWidget *widget, gpointer data );
 gboolean callback_delete_event( GtkWidget *widget, GdkEvent  *event, gpointer data );
 void callback_update_current(GtkWidget *widget, gpointer data);
@@ -29,4 +29,10 @@ void callback_save_as( GtkWidget *widget, gpointer data);
 void callback_load( GtkWidget *widget, gpointer data);
 
 void callback_delete_current( GtkWidget *widget, gpointer data);
+void callback_delete_multiple( GtkWidget *widget, gpointer data);
 void callback_delete_all( GtkWidget *widget, gpointer data);
+
+void callback_shift_up( GtkWidget *widget, gpointer data);
+void callback_shift_down( GtkWidget *widget, gpointer data);
+void callback_shift_left( GtkWidget *widget, gpointer data);
+void callback_shift_right( GtkWidget *widget, gpointer data);

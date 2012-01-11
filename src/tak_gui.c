@@ -28,6 +28,7 @@ int main( int argc, char *argv[] ){
     GtkWidget *button_dim_f, *button_dim_b;
     GtkWidget *button_save, *button_save_as, *button_load;
     GtkWidget *button_delete, *button_delete_multiple, *button_delete_all;
+    GtkWidget *button_shift_up, *button_shift_down, *button_shift_left, *button_shift_right;
 
     GtkWidget *align_frames, *align_panel, *align_window;
 
@@ -59,10 +60,8 @@ int main( int argc, char *argv[] ){
 
     /* Adding window with options */
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title (GTK_WINDOW (window), "Table");
     g_signal_connect (window, "delete-event", G_CALLBACK (callback_delete_event), NULL);
     gtk_container_set_border_width (GTK_CONTAINER (window), 20);
-
     /* Adding grid with options */
     grid = (GtkGrid*)gtk_grid_new();
 	gtk_grid_set_row_homogeneous(grid, TRUE);
@@ -110,6 +109,11 @@ int main( int argc, char *argv[] ){
     button_delete_multiple = gtk_button_new_with_label("Delete mulitple");
     button_delete_all = gtk_button_new_with_label("Delete all");
 
+    button_shift_up = gtk_button_new_with_label("Shift up");
+    button_shift_down = gtk_button_new_with_label("Shift down");
+    button_shift_left = gtk_button_new_with_label("Shift left");
+    button_shift_right = gtk_button_new_with_label("Shift right");
+
     gtk_button_set_image ((GtkButton*)button_prev, gtk_image_new_from_file ("images/prev.png"));
     gtk_button_set_image ((GtkButton*)button_next, gtk_image_new_from_file ("images/next.png"));
     gtk_button_set_image ((GtkButton*)button_fb, gtk_image_new_from_file ("images/fb.png"));
@@ -135,7 +139,7 @@ int main( int argc, char *argv[] ){
     color_master = (GtkColorButton*)gtk_color_button_new ();
 
     g_signal_connect (button_mark, "clicked", G_CALLBACK (callback_mark_all), NULL);
-    g_signal_connect (button_clear, "clicked", G_CALLBACK (callback_clear_all), NULL);
+    g_signal_connect (button_clear, "clicked", G_CALLBACK (callback_unmark_all), NULL);
     g_signal_connect (button_quit, "clicked", G_CALLBACK (callback_delete_event), NULL);
 
     g_signal_connect (button_apply_color, "clicked", G_CALLBACK (callback_apply_color), (gpointer) color_master);
@@ -160,8 +164,13 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_load, "clicked", G_CALLBACK (callback_load), NULL);
 
     g_signal_connect (button_delete, "clicked", G_CALLBACK (callback_delete_current), NULL);
+    g_signal_connect (button_delete_multiple, "clicked", G_CALLBACK (callback_delete_multiple), NULL);
     g_signal_connect (button_delete_all, "clicked", G_CALLBACK (callback_delete_all), NULL);
 
+    g_signal_connect (button_shift_up, "clicked", G_CALLBACK (callback_shift_up), NULL);
+    g_signal_connect (button_shift_down, "clicked", G_CALLBACK (callback_shift_down), NULL);
+    g_signal_connect (button_shift_left, "clicked", G_CALLBACK (callback_shift_left), NULL);
+    g_signal_connect (button_shift_right, "clicked", G_CALLBACK (callback_shift_right), NULL);
 
 
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (callback_on_key_press), NULL);
@@ -191,20 +200,26 @@ int main( int argc, char *argv[] ){
     gtk_grid_attach (grid_panel, (GtkWidget*)color_master, 2, 0, 2, 2);
     gtk_grid_attach (grid_panel, (GtkWidget*)button_apply_color, 0, 4, 6, 1);
 
-    gtk_grid_attach (grid_panel, (GtkWidget*)button_update_current, 0, 5, 6, 1);
+    gtk_grid_attach (grid_panel, (GtkWidget*)button_update_current, 0, 7, 6, 1);
     gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_insert_back, (GtkWidget*)button_update_current, GTK_POS_BOTTOM, 3, 1);
     gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_insert_front, (GtkWidget*)button_insert_back, GTK_POS_RIGHT, 3, 1);
 
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_f, 3, 12, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_f, 3, 9, 3, 1);
 	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_dim_b,(GtkWidget*)button_dim_f, GTK_POS_LEFT, 3, 1);
 
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_save, 0, 13, 3, 1);
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_save_as, 3, 13, 3, 1);
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_load, 0, 14, 6, 1);
 
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete, 0, 7, 6, 1);
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete_multiple, 0, 8, 6, 1);
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete_all, 0, 9, 6, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete, 0, 10, 6, 1);
+	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_delete_multiple, (GtkWidget*)button_delete, GTK_POS_BOTTOM, 6, 1);
+	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_delete_all, (GtkWidget*)button_delete_multiple, GTK_POS_BOTTOM, 6, 1);
+
+
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_shift_down, 0, 6, 3, 1);
+	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_shift_up,(GtkWidget*)button_shift_down, GTK_POS_RIGHT, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_shift_left, 0, 5, 3, 1);
+	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_shift_right,(GtkWidget*)button_shift_left, GTK_POS_RIGHT, 3, 1);
 
     gtk_grid_attach (grid, (GtkWidget*)align_frames, 0, 0, 10, 21);
     gtk_grid_attach (grid, (GtkWidget*)align_panel, 10, 0, 6, 21);
@@ -234,8 +249,13 @@ int main( int argc, char *argv[] ){
 	gtk_widget_show (button_load);
 
 	gtk_widget_show (button_delete);
-//	gtk_widget_show (button_delete_multiple);
+	gtk_widget_show (button_delete_multiple);
 	gtk_widget_show (button_delete_all);
+
+	gtk_widget_show (button_shift_up);
+	gtk_widget_show (button_shift_down);
+	gtk_widget_show (button_shift_left);
+	gtk_widget_show (button_shift_right);
 
 	gtk_widget_show ((GtkWidget*)color_master);
 	gtk_widget_show (button_apply_color);

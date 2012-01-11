@@ -6,18 +6,35 @@
 #include "frames.h"
 #include "global_variables.h"
 
+void load_update_title(gchar* title){
+	gchar label[70];
+	char* p;
+
+
+	p = strchr(title, '/');
+	printf(" title: %s\n", title);
+	while (p != NULL) {
+		p++;
+		strcpy (title, p);
+		p = strchr(p, '/');
+	}
+	title = strndup(title,strlen(title)-4);
+	printf(" search: %s\n", title);
+	sprintf(label, "RegiTakShowMaker - %s",title);
+	gtk_window_set_title(GTK_WINDOW (window), label);
+	strcpy (window_title, title);
+}
 
 void save_to_file( GtkWidget *widget, gpointer data){
 	FILE *file;
 	int i,j;
 	Frame* frame_to_write;
 
-	char filename[20];
+	char filename[40];
 	sprintf(filename, "%s.rts",(gchar*)data);
 
 	frame_to_write = frame_header->start_frame;
-	file = fopen(filename,"w"); /* apend file (add text to
-	a file or create a file if it does not exist.*/
+	file = fopen(filename,"w");
 	while(1){
 		for(i = 0; i<10; i++){
 			for(j = 0; j<6; j++){
@@ -28,7 +45,8 @@ void save_to_file( GtkWidget *widget, gpointer data){
 		frame_to_write = frame_to_write->next_frame;
 		fprintf(file,"%s","\n");
 	}
-	fclose(file); /*done!*/
+	fclose(file);
+	load_update_title(filename);
 	return;
 }
 
@@ -70,6 +88,7 @@ void load_read_file(char *filename){
 		frame_store_frame(buffer, TRUE);
 	}
 	fclose(in);
+	load_update_title(filename);
 	return;
 }
 

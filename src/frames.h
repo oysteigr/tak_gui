@@ -19,3 +19,5 @@ void frame_auto_dim(gint number_of_steps, GtkColorButton*** color_buttons, gbool
 void frame_store_frame(char string[],gboolean create_new);
 
 void get_short_color_string(gchar* color_string, GdkRGBA rgba);
+
+void frame_shift(gint up, gint left, gint x, gint y);

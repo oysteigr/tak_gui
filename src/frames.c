@@ -251,3 +251,33 @@ void frame_make_black(){
 		}
 	}
 }
+
+void frame_shift(gint up, gint left, gint x, gint y){
+	int i,j;
+	GdkRGBA rgba;
+	if(!up && !left){
+		for(i = x; i<10; i++){
+			for(j = y; j<6; j++){
+				gtk_color_button_get_rgba(color_button[9-i+left][5-j+up], &rgba);
+				gtk_color_button_set_rgba(color_button[9-i+x-left][5-j+y-up], &rgba);
+				if((i==9 && x) || (j==5 && y)){
+					gdk_rgba_parse(&rgba, "#000000");
+					gtk_color_button_set_rgba(color_button[9-i][5-j], &rgba);
+				}
+			}
+		}
+	}
+	else{
+		for(i = x; i<10; i++){
+			for(j = y; j<6; j++){
+				gtk_color_button_get_rgba(color_button[i-x+left][j-y+up], &rgba);
+				gtk_color_button_set_rgba(color_button[i-left][j-up], &rgba);
+				if((i==9 && x) || (j==5 && y)){
+					gdk_rgba_parse(&rgba, "#000000");
+					gtk_color_button_set_rgba(color_button[i][j], &rgba);
+				}
+			}
+		}
+	}
+}
+

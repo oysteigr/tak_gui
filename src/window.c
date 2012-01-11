@@ -13,6 +13,18 @@ void window_update_label(){
 	gtk_label_set_text ((GtkLabel*)label_frame_number, label);
 }
 
+void window_update_title(gchar* title){
+	gchar label[70];
+	sprintf(label, "RegiTakShowMaker - %s",title);
+	gtk_window_set_title(GTK_WINDOW (window), label);
+	strcpy (window_title, title);
+}
+
+void window_init(gchar* title){
+	window_title = malloc(50*sizeof(gchar));
+	window_update_title("new show");
+}
+
 void window_colorbuttons_init(){
 	GdkRGBA rgba;
     char *strpoint;

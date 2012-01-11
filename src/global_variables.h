@@ -24,3 +24,5 @@ GtkWidget *label_frame_number;
 GtkWidget *window;
 
 Frame_header* frame_header;
+
+gchar* window_title;

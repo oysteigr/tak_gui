@@ -11,7 +11,9 @@
 void callback_init(){
     frame_header_init();
     window_colorbuttons_init();
+    window_init("new_show");
 }
+
 
 void  callback_auto_dim_run ( GtkWidget *widget, gpointer data ){
 
@@ -80,7 +82,7 @@ void callback_mark_all( GtkWidget *widget, gpointer data ){
 	}
     return;
 }
-void callback_clear_all( GtkWidget *widget, gpointer data ){
+void callback_unmark_all( GtkWidget *widget, gpointer data ){
 	int i,j;
 	for (i = 0; i<10; i++){
 		for(j = 0; j<6; j++){
@@ -195,22 +197,10 @@ void callback_jump_end(GtkWidget *widget, gpointer data){
 	window_update_label();
 }
 
-void callback_on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data){
-    switch (event->keyval)
-    {
-        case GDK_KEY_Left:
-        	callback_show_prev(widget, data);
-            break;
-        case GDK_KEY_Right:
-        	callback_show_next(widget, data);
-            break;
-        default:
-            return;
-    }
-}
+
 
 void callback_save( GtkWidget *widget, gpointer data){
-	save_to_file(widget, data);
+	save_to_file(widget, (gpointer)window_title);
 }
 void callback_save_as( GtkWidget *widget, gpointer data){
 	save_as_popup (widget, data);
@@ -232,6 +222,9 @@ void callback_delete_current( GtkWidget *widget, gpointer data){
 		window_update_label();
 	}
 }
+void callback_delete_multiple( GtkWidget *widget, gpointer data){
+	window_popup_warning("Not in use at the moment");
+}
 
 void callback_delete_all( GtkWidget *widget, gpointer data){
 	while(frame_delete());
@@ -239,4 +232,94 @@ void callback_delete_all( GtkWidget *widget, gpointer data){
 	frame_load_colors(color_button);
 	callback_color_changed(widget, data);
 	window_update_label();
+}
+
+void callback_shift_up( GtkWidget *widget, gpointer data){
+	frame_shift(1, 0, 0, 1);
+	callback_color_changed(widget, data);
+}
+void callback_shift_down( GtkWidget *widget, gpointer data){
+	frame_shift(0, 0, 0, 1);
+	callback_color_changed(widget, data);
+}
+void callback_shift_left( GtkWidget *widget, gpointer data){
+	frame_shift(0, 1, 1, 0);
+	callback_color_changed(widget, data);
+}
+void callback_shift_right( GtkWidget *widget, gpointer data){
+	frame_shift(0, 0, 1, 0);
+	callback_color_changed(widget, data);
+}
+
+void callback_on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data){
+	if(event->state & GDK_CONTROL_MASK){
+		switch (event->keyval){
+			case GDK_KEY_a:
+				callback_mark_all(widget, data);
+				break;
+			case GDK_KEY_s:
+				callback_save(widget, data);
+				break;
+			case GDK_KEY_l:
+				callback_load(widget, data);
+				break;
+			case GDK_KEY_Left:
+				callback_insert_before(widget, data);
+				break;
+			case GDK_KEY_Right:
+				callback_insert_behind(widget, data);
+				break;
+			default:
+				return;
+		}
+	}
+	else if(event->state & GDK_SHIFT_MASK){
+		switch (event->keyval){
+			case GDK_KEY_Up:
+				callback_shift_up(widget, data);
+				break;
+			case GDK_KEY_Down:
+				callback_shift_down(widget, data);
+				break;
+			case GDK_KEY_Left:
+				callback_shift_left(widget, data);
+				break;
+			case GDK_KEY_Right:
+				callback_shift_right(widget, data);
+				break;
+			default:
+				return;
+		}
+	}
+	else{
+		switch (event->keyval){
+			case GDK_KEY_Left:
+				callback_show_prev(widget, data);
+				break;
+			case GDK_KEY_Right:
+				callback_show_next(widget, data);
+				break;
+			case GDK_KEY_Page_Down:
+				callback_jump_prev(widget, data);
+				break;
+			case GDK_KEY_Page_Up:
+				callback_jump_next(widget, data);
+				break;
+			case GDK_KEY_Home:
+				callback_jump_start(widget, data);
+				break;
+			case GDK_KEY_End:
+				callback_jump_end(widget, data);
+				break;
+			case GDK_KEY_Delete:
+				callback_delete_current(widget, data);
+				break;
+			case GDK_KEY_Escape:
+				callback_unmark_all(widget, data);
+				break;
+			default:
+				return;
+		}
+
+	}
 }
