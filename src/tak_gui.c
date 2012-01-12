@@ -26,16 +26,17 @@ int main( int argc, char *argv[] ){
     GtkWidget *button_insert_back, *button_insert_front, *button_update_current;
     GtkWidget *button_prev, *button_next, *button_fb, *button_ff, *button_start, *button_end;
     GtkWidget *button_dim_f, *button_dim_b;
-    GtkWidget *button_save, *button_save_as, *button_load;
+    GtkWidget *button_save, *button_save_as, *button_load, *button_load_new;
     GtkWidget *button_delete, *button_delete_multiple, *button_delete_all;
     GtkWidget *button_shift_up, *button_shift_down, *button_shift_left, *button_shift_right;
+    GtkWidget *button_copy, *button_paste;
 
     GtkWidget *align_frames, *align_panel, *align_window;
 
     GtkCssProvider* css_theme;
     GtkStyleContext* style_context;
 
-    GtkColorButton *color_master;
+
     GtkGrid *grid_frames, *grid_panel, *grid;
 
 
@@ -46,16 +47,19 @@ int main( int argc, char *argv[] ){
     color_button = malloc(10*sizeof(GtkColorButton**));
     toggle_button = malloc(10*sizeof(GtkToggleButton**));
     bool_marked = malloc(10*sizeof(gboolean**));
+    color_copy = malloc(10*sizeof(GdkRGBA**));
 
     for(i = 0; i<10;i++){
     	color_button[i] = malloc(6*sizeof(GtkColorButton*));
     	toggle_button[i] = malloc(6*sizeof(GtkToggleButton*));
     	bool_marked[i] = malloc(6*sizeof(gboolean*));
+    	color_copy[i] = malloc(6*sizeof(GdkRGBA*));
 
     	  for(j = 0; j<6;j++){
     	    	color_button[i][j] = malloc(sizeof(GtkColorButton));
     	    	toggle_button[i][j] = malloc(sizeof(GtkToggleButton));
     	    	bool_marked[i][j] = malloc(sizeof(gboolean));
+    	    	color_copy[i][j] = malloc(sizeof(GdkRGBA));
     	  }
     }
 
@@ -92,7 +96,7 @@ int main( int argc, char *argv[] ){
 
     button_apply_color = gtk_button_new_with_label("Apply to marked");
 
-    button_update_current = gtk_button_new_with_label("Update current");
+    button_update_current = gtk_button_new_with_label("Store current");
     button_insert_back = gtk_button_new_with_label("Insert in back");
     button_insert_front = gtk_button_new_with_label("Insert in front");
 
@@ -109,6 +113,7 @@ int main( int argc, char *argv[] ){
     button_save = gtk_button_new_with_label("Save show");
     button_save_as = gtk_button_new_with_label("Save show as..");
     button_load = gtk_button_new_with_label("Load show");
+    button_load_new = gtk_button_new_with_label("Load new show");
 
     button_delete = gtk_button_new_with_label("Delete current");
     button_delete_multiple = gtk_button_new_with_label("Delete mulitple");
@@ -118,6 +123,9 @@ int main( int argc, char *argv[] ){
     button_shift_down = gtk_button_new_with_label("Shift down");
     button_shift_left = gtk_button_new_with_label("Shift left");
     button_shift_right = gtk_button_new_with_label("Shift right");
+
+    button_copy = gtk_button_new_with_label("Copy");
+    button_paste = gtk_button_new_with_label("Paste");
 
     gtk_button_set_image ((GtkButton*)button_prev, gtk_image_new_from_file ("src/images/prev.png"));
     gtk_button_set_image ((GtkButton*)button_next, gtk_image_new_from_file ("src/images/next.png"));
@@ -135,11 +143,15 @@ int main( int argc, char *argv[] ){
     gtk_container_add (GTK_CONTAINER (align_window), (GtkWidget*)grid);
     gtk_container_add (GTK_CONTAINER (window), (GtkWidget*)align_window);
 
-    css_theme = gtk_css_provider_new();
+//    css_theme = gtk_css_provider_new();
+    css_theme = gtk_css_provider_get_default();
 
     gtk_css_provider_load_from_path(css_theme, "src/themes/regi.css", NULL);
-    style_context = gtk_widget_get_style_context((GtkWidget*)window);
-    gtk_style_context_add_provider (style_context, (GtkStyleProvider*)css_theme, GTK_STYLE_PROVIDER_PRIORITY_USER );
+//    style_context = gtk_widget_get_style_context((GtkWidget*)window);
+//    gtk_style_context_add_provider (style_context, (GtkStyleProvider*)css_theme, GTK_STYLE_PROVIDER_PRIORITY_USER );
+
+    gtk_widget_set_size_request(button_prev, 70, -1);
+
 
     label_frame_number = gtk_label_new ("Frame 1 of 1");
 
@@ -152,7 +164,6 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_quit, "clicked", G_CALLBACK (callback_delete_event), NULL);
 
     g_signal_connect (button_apply_color, "clicked", G_CALLBACK (callback_apply_color), (gpointer) color_master);
-    g_signal_connect (button_apply_color, "clicked", G_CALLBACK (callback_color_changed), NULL);
     g_signal_connect (button_update_current, "clicked", G_CALLBACK (callback_update_current), NULL);
 
     g_signal_connect (button_prev, "clicked", G_CALLBACK (callback_show_prev), NULL);
@@ -171,6 +182,7 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_save, "clicked", G_CALLBACK (callback_save), "test");
     g_signal_connect (button_save_as, "clicked", G_CALLBACK (callback_save_as), NULL);
     g_signal_connect (button_load, "clicked", G_CALLBACK (callback_load), NULL);
+    g_signal_connect (button_load_new, "clicked", G_CALLBACK (callback_load_new), NULL);
 
     g_signal_connect (button_delete, "clicked", G_CALLBACK (callback_delete_current), NULL);
     g_signal_connect (button_delete_multiple, "clicked", G_CALLBACK (callback_delete_multiple), NULL);
@@ -180,6 +192,9 @@ int main( int argc, char *argv[] ){
     g_signal_connect (button_shift_down, "clicked", G_CALLBACK (callback_shift_down), NULL);
     g_signal_connect (button_shift_left, "clicked", G_CALLBACK (callback_shift_left), NULL);
     g_signal_connect (button_shift_right, "clicked", G_CALLBACK (callback_shift_right), NULL);
+
+    g_signal_connect (button_copy, "clicked", G_CALLBACK (callback_copy), NULL);
+	g_signal_connect (button_paste, "clicked", G_CALLBACK (callback_paste), NULL);
 
 
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (callback_on_key_press), NULL);
@@ -209,26 +224,29 @@ int main( int argc, char *argv[] ){
     gtk_grid_attach (grid_panel, (GtkWidget*)color_master, 2, 0, 2, 2);
     gtk_grid_attach (grid_panel, (GtkWidget*)button_apply_color, 0, 4, 6, 1);
 
-    gtk_grid_attach (grid_panel, (GtkWidget*)button_update_current, 0, 7, 6, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_copy, 0, 5, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_paste, 3, 5, 3, 1);
+
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_shift_left, 0, 6, 3, 1);
+	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_shift_right,(GtkWidget*)button_shift_left, GTK_POS_RIGHT, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_shift_down, 0, 7, 3, 1);
+	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_shift_up,(GtkWidget*)button_shift_down, GTK_POS_RIGHT, 3, 1);
+
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_update_current, 0, 8, 6, 1);
     gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_insert_back, (GtkWidget*)button_update_current, GTK_POS_BOTTOM, 3, 1);
     gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_insert_front, (GtkWidget*)button_insert_back, GTK_POS_RIGHT, 3, 1);
 
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_f, 3, 9, 3, 1);
 	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_dim_b,(GtkWidget*)button_dim_f, GTK_POS_LEFT, 3, 1);
 
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_save, 0, 13, 3, 1);
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_save_as, 3, 13, 3, 1);
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_load, 0, 14, 6, 1);
-
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete, 0, 10, 6, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete, 0, 11, 6, 1);
 	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_delete_multiple, (GtkWidget*)button_delete, GTK_POS_BOTTOM, 6, 1);
 	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_delete_all, (GtkWidget*)button_delete_multiple, GTK_POS_BOTTOM, 6, 1);
 
-
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_shift_down, 0, 6, 3, 1);
-	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_shift_up,(GtkWidget*)button_shift_down, GTK_POS_RIGHT, 3, 1);
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_shift_left, 0, 5, 3, 1);
-	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_shift_right,(GtkWidget*)button_shift_left, GTK_POS_RIGHT, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_save, 0, 14, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_save_as, 3, 14, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_load, 0, 15, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_load_new, 3, 15, 3, 1);
 
     gtk_grid_attach (grid, (GtkWidget*)align_frames, 0, 0, 10, 21);
     gtk_grid_attach (grid, (GtkWidget*)align_panel, 10, 0, 6, 21);
@@ -256,6 +274,7 @@ int main( int argc, char *argv[] ){
 	gtk_widget_show (button_save);
 	gtk_widget_show (button_save_as);
 	gtk_widget_show (button_load);
+	gtk_widget_show (button_load_new);
 
 	gtk_widget_show (button_delete);
 	gtk_widget_show (button_delete_multiple);
@@ -265,6 +284,9 @@ int main( int argc, char *argv[] ){
 	gtk_widget_show (button_shift_down);
 	gtk_widget_show (button_shift_left);
 	gtk_widget_show (button_shift_right);
+
+	gtk_widget_show (button_copy);
+	gtk_widget_show (button_paste);
 
 	gtk_widget_show ((GtkWidget*)color_master);
 	gtk_widget_show (button_apply_color);

@@ -281,3 +281,22 @@ void frame_shift(gint up, gint left, gint x, gint y){
 	}
 }
 
+void frame_copy(){
+	int i,j;
+	for(i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			gtk_color_button_get_rgba(color_button[i][j], color_copy[i][j]);
+		}
+	}
+}
+
+void frame_paste(){
+	int i,j;
+	for(i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			gtk_color_button_set_rgba(color_button[i][j], color_copy[i][j]);
+		}
+	}
+}
+
+

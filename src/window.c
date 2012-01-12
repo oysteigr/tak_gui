@@ -22,7 +22,7 @@ void window_update_title(gchar* title){
 
 void window_init(gchar* title){
 	window_title = malloc(50*sizeof(gchar));
-	window_update_title("new show");
+	window_update_title(title);
 }
 
 void window_colorbuttons_init(){

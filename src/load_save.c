@@ -10,16 +10,13 @@ void load_update_title(gchar* title){
 	gchar label[70];
 	char* p;
 
-
 	p = strchr(title, '/');
-	printf(" title: %s\n", title);
 	while (p != NULL) {
-		p++;
+		p += sizeof(gchar);
 		strcpy (title, p);
-		p = strchr(p, '/');
+		p = strchr(title, '/');
 	}
 	title = strndup(title,strlen(title)-4);
-	printf(" search: %s\n", title);
 	sprintf(label, "RegiTakShowMaker - %s",title);
 	gtk_window_set_title(GTK_WINDOW (window), label);
 	strcpy (window_title, title);
@@ -63,7 +60,7 @@ void  save_as_popup ( GtkWidget *widget, gpointer data ){
 
    button_ok = gtk_dialog_add_button ((GtkDialog*)dialog_save_as, "Save as", (gint)GTK_STOCK_OK);
 
-   buffer_file_name = gtk_entry_buffer_new("New_file", -1);
+   buffer_file_name = gtk_entry_buffer_new("new show", -1);
 
    entry_file_name = gtk_entry_new_with_buffer(GTK_ENTRY_BUFFER(buffer_file_name));
 

@@ -1,0 +1,28 @@
+
+CTRL + s				Save show
+CTRL + l				Load show
+Left arrow				Previous frame
+Right arrow				Next frame
+Page Down				Jump 100 frames back
+Page Up					Jump 100 frames forward
+Home					Jump to start frame
+End						Jump to end frame
+Delete					Delete current frame
+Escape					Clear changes in current frame
+CTRL + a				Select all cells
+CTRL + d				Deselect all cells
+CTRL + i				Select inverse
+CTRL + #				Select # row
+ALT + #					Select # column
+CTRL + c				Copy
+CTRL + v				Paste
+ALT + Up				Shift up
+ALT + Down				Shift down
+ALT + Left				Shift left
+ALT + Right				Shift right
+ALT + s					Store current
+CTRL + Left arrow		Insert frame behind
+CTRL + Right arrow		Insert frame before
+ALT + a					Apply color to selected
+ALT + c					Choose color
+

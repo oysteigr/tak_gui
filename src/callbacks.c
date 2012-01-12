@@ -8,10 +8,14 @@
 #include "global_variables.h"
 #include "load_save.h"
 
+void callback_on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data);
+
 void callback_init(){
     frame_header_init();
     window_colorbuttons_init();
-    window_init("new_show");
+    window_init("unnamed show");
+    frame_update_current(color_button);
+    frame_copy();
 }
 
 
@@ -82,6 +86,24 @@ void callback_mark_all( GtkWidget *widget, gpointer data ){
 	}
     return;
 }
+
+void callback_mark_inverse( GtkWidget *widget, gpointer data ){
+	int i,j;
+	for (i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			if(*bool_marked[i][j]){
+				gtk_toggle_button_set_active(toggle_button[i][j], FALSE);
+				*bool_marked[i][j] = FALSE;
+			}
+			else{
+				gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
+				*bool_marked[i][j] = TRUE;
+			}
+		}
+	}
+    return;
+}
+
 void callback_unmark_all( GtkWidget *widget, gpointer data ){
 	int i,j;
 	for (i = 0; i<10; i++){
@@ -92,7 +114,42 @@ void callback_unmark_all( GtkWidget *widget, gpointer data ){
 	}
     return;
 }
-
+void callback_mark_row( GtkWidget *widget, gpointer data ){
+	int i,j;
+	for (i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			if((gint)data == j){
+				gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
+				*bool_marked[i][j] = TRUE;
+			}
+		}
+	}
+    return;
+}
+void callback_mark_column( GtkWidget *widget, gpointer data ){
+	int i,j;
+	for (i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			if((gint)data == i){
+				gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
+				*bool_marked[i][j] = TRUE;
+			}
+		}
+	}
+    return;
+}
+void callback_color_changed(GtkWidget *widget, gpointer data){
+	int i, j;
+	GdkRGBA rgba;
+	gchar color_string[13];
+	for(i = 0; i<10; i++){
+		for(j = 0; j<6; j++){
+			gtk_color_button_get_rgba(color_button[i][j], &rgba);
+			get_short_color_string(color_string, rgba);
+			gtk_button_set_label ((GtkButton*)toggle_button[i][j], color_string);
+		}
+	}
+}
 void callback_apply_color( GtkWidget *widget, gpointer data ){
 	int i,j;
 	gboolean any_selected = FALSE;
@@ -110,6 +167,7 @@ void callback_apply_color( GtkWidget *widget, gpointer data ){
 	if(!any_selected){
 		window_popup_warning("Nothing is selected!");
 	}
+	callback_color_changed(widget, data);
     return;
 }
 
@@ -132,19 +190,6 @@ void callback_insert_behind(GtkWidget *widget, gpointer data){
 	frame_insert_back(color_button);
 
 	window_update_label();
-}
-
-void callback_color_changed(GtkWidget *widget, gpointer data){
-	int i, j;
-	GdkRGBA rgba;
-	gchar color_string[13];
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
-			gtk_color_button_get_rgba(color_button[i][j], &rgba);
-			get_short_color_string(color_string, rgba);
-			gtk_button_set_label ((GtkButton*)toggle_button[i][j], color_string);
-		}
-	}
 }
 
 void callback_show_prev(GtkWidget *widget, gpointer data){
@@ -199,17 +244,6 @@ void callback_jump_end(GtkWidget *widget, gpointer data){
 
 
 
-void callback_save( GtkWidget *widget, gpointer data){
-	save_to_file(widget, (gpointer)window_title);
-}
-void callback_save_as( GtkWidget *widget, gpointer data){
-	save_as_popup (widget, data);
-}
-void callback_load( GtkWidget *widget, gpointer data){
-	load_select_file_dialog(widget, data);
-	frame_load_colors(color_button);
-	window_update_label();
-}
 
 void callback_delete_current( GtkWidget *widget, gpointer data){
 	if(frame_header->current_frame->next_frame == NULL && frame_header->current_frame->prev_frame == NULL){
@@ -234,6 +268,29 @@ void callback_delete_all( GtkWidget *widget, gpointer data){
 	window_update_label();
 }
 
+void callback_save( GtkWidget *widget, gpointer data){
+	if(!strcmp(window_title,"unnamed show")){
+		save_as_popup (widget, data);
+	}
+	else{
+		save_to_file(widget, (gpointer)window_title);
+	}
+}
+void callback_save_as( GtkWidget *widget, gpointer data){
+	save_as_popup (widget, data);
+}
+void callback_load( GtkWidget *widget, gpointer data){
+	load_select_file_dialog(widget, data);
+	frame_load_colors(color_button);
+	window_update_label();
+}
+void callback_load_new( GtkWidget *widget, gpointer data){
+	callback_delete_all(widget,data);
+	load_select_file_dialog(widget, data);
+	frame_load_colors(color_button);
+	window_update_label();
+}
+
 void callback_shift_up( GtkWidget *widget, gpointer data){
 	frame_shift(1, 0, 0, 1);
 	callback_color_changed(widget, data);
@@ -251,75 +308,10 @@ void callback_shift_right( GtkWidget *widget, gpointer data){
 	callback_color_changed(widget, data);
 }
 
-void callback_on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data){
-	if(event->state & GDK_CONTROL_MASK){
-		switch (event->keyval){
-			case GDK_KEY_a:
-				callback_mark_all(widget, data);
-				break;
-			case GDK_KEY_s:
-				callback_save(widget, data);
-				break;
-			case GDK_KEY_l:
-				callback_load(widget, data);
-				break;
-			case GDK_KEY_Left:
-				callback_insert_before(widget, data);
-				break;
-			case GDK_KEY_Right:
-				callback_insert_behind(widget, data);
-				break;
-			default:
-				return;
-		}
-	}
-	else if(event->state & GDK_SHIFT_MASK){
-		switch (event->keyval){
-			case GDK_KEY_Up:
-				callback_shift_up(widget, data);
-				break;
-			case GDK_KEY_Down:
-				callback_shift_down(widget, data);
-				break;
-			case GDK_KEY_Left:
-				callback_shift_left(widget, data);
-				break;
-			case GDK_KEY_Right:
-				callback_shift_right(widget, data);
-				break;
-			default:
-				return;
-		}
-	}
-	else{
-		switch (event->keyval){
-			case GDK_KEY_Left:
-				callback_show_prev(widget, data);
-				break;
-			case GDK_KEY_Right:
-				callback_show_next(widget, data);
-				break;
-			case GDK_KEY_Page_Down:
-				callback_jump_prev(widget, data);
-				break;
-			case GDK_KEY_Page_Up:
-				callback_jump_next(widget, data);
-				break;
-			case GDK_KEY_Home:
-				callback_jump_start(widget, data);
-				break;
-			case GDK_KEY_End:
-				callback_jump_end(widget, data);
-				break;
-			case GDK_KEY_Delete:
-				callback_delete_current(widget, data);
-				break;
-			case GDK_KEY_Escape:
-				callback_unmark_all(widget, data);
-				break;
-			default:
-				return;
-		}
-
-	}
+void callback_copy(GtkWidget *widget, gpointer data){
+	frame_copy();
 }
+void callback_paste(GtkWidget *widget, gpointer data){
+	frame_paste();
+}
+

@@ -15,9 +15,10 @@ typedef struct{
 	Frame* end_frame;
 } Frame_header;
 
-
+GtkColorButton *color_master;
 GtkColorButton*** color_button;
 GtkToggleButton*** toggle_button;
+GdkRGBA*** color_copy;
 gboolean*** bool_marked;
 
 GtkWidget *label_frame_number;
