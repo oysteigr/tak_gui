@@ -44,18 +44,17 @@ int main( int argc, char *argv[] ){
     gint i, j;
 
 
-    color_button = malloc(10*sizeof(GtkColorButton**));
-    toggle_button = malloc(10*sizeof(GtkToggleButton**));
-    bool_marked = malloc(10*sizeof(gboolean**));
-    color_copy = malloc(10*sizeof(GdkRGBA**));
+    color_button = malloc(X_SIZE*sizeof(GtkColorButton**));
+    toggle_button = malloc(X_SIZE*sizeof(GtkToggleButton**));
+    bool_marked = malloc(X_SIZE*sizeof(gboolean**));
+    color_copy = malloc(X_SIZE*sizeof(GdkRGBA**));
+    for(i = 0; i<X_SIZE;i++){
+    	color_button[i] = malloc(Y_SIZE*sizeof(GtkColorButton*));
+    	toggle_button[i] = malloc(Y_SIZE*sizeof(GtkToggleButton*));
+    	bool_marked[i] = malloc(Y_SIZE*sizeof(gboolean*));
+    	color_copy[i] = malloc(Y_SIZE*sizeof(GdkRGBA*));
 
-    for(i = 0; i<10;i++){
-    	color_button[i] = malloc(6*sizeof(GtkColorButton*));
-    	toggle_button[i] = malloc(6*sizeof(GtkToggleButton*));
-    	bool_marked[i] = malloc(6*sizeof(gboolean*));
-    	color_copy[i] = malloc(6*sizeof(GdkRGBA*));
-
-    	  for(j = 0; j<6;j++){
+    	  for(j = 0; j<Y_SIZE;j++){
     	    	color_button[i][j] = malloc(sizeof(GtkColorButton));
     	    	toggle_button[i][j] = malloc(sizeof(GtkToggleButton));
     	    	bool_marked[i][j] = malloc(sizeof(gboolean));
@@ -200,17 +199,17 @@ int main( int argc, char *argv[] ){
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (callback_on_key_press), NULL);
 
 
-	for(i = 0; i<10;i++){
-		for(j = 0; j<6;j++){
+	for(i = 0; i<X_SIZE;i++){
+		for(j = 0; j<Y_SIZE;j++){
 			gtk_grid_attach(grid_frames,(GtkWidget*) color_button[i][j], i, j*3+1, 1, 2);
 			gtk_grid_attach(grid_frames,(GtkWidget*) toggle_button[i][j], i, j*3+3, 1, 1);
 			gtk_widget_show ((GtkWidget*)color_button[i][j]);
 			gtk_widget_show ((GtkWidget*)toggle_button[i][j]);
 		}
 	}
-    gtk_grid_attach (grid_frames, (GtkWidget*)button_mark, 0, 20, 5, 1);
-    gtk_grid_attach (grid_frames, (GtkWidget*)button_clear, 5, 20, 5, 1);
-    gtk_grid_attach (grid_frames, (GtkWidget*)button_quit, 0, 21, 10, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_mark, 0, Y_SIZE*3 +2, 5, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_clear, 5, Y_SIZE*3 +2, 5, 1);
+    gtk_grid_attach (grid_frames, (GtkWidget*)button_quit, 0, Y_SIZE*3 +3, 10, 1);
 
     gtk_grid_attach (grid_frames, (GtkWidget*)button_prev, 2, 0, 1, 1);
     gtk_grid_attach (grid_frames, (GtkWidget*)button_next, 7, 0, 1, 1);
@@ -236,7 +235,7 @@ int main( int argc, char *argv[] ){
     gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_insert_back, (GtkWidget*)button_update_current, GTK_POS_BOTTOM, 3, 1);
     gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_insert_front, (GtkWidget*)button_insert_back, GTK_POS_RIGHT, 3, 1);
 
-	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_f, 3, 9, 3, 1);
+	gtk_grid_attach (grid_panel, (GtkWidget*)button_dim_f, 3, 10, 3, 1);
 	gtk_grid_attach_next_to (grid_panel, (GtkWidget*)button_dim_b,(GtkWidget*)button_dim_f, GTK_POS_LEFT, 3, 1);
 
 	gtk_grid_attach (grid_panel, (GtkWidget*)button_delete, 0, 11, 6, 1);

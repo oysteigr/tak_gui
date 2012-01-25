@@ -1,3 +1,9 @@
+#ifndef GLOBAL_VAR_H
+#define GLOBAL_VAR_H
+
+static const gint X_SIZE = 10;
+static const gint Y_SIZE = 6;
+
 struct Frame{
 	gint id;
 	gchar*** frame;
@@ -27,3 +33,5 @@ GtkWindow *window;
 Frame_header* frame_header;
 
 gchar* window_title;
+
+#endif

@@ -74,12 +74,12 @@ void  callback_auto_dim_popup ( GtkWidget *widget, gpointer data ){
 
 void callback_mark( GtkWidget *widget, gpointer data ){
 	int k = atoi((char*)data);
-	*bool_marked[k%10][k/10] = gtk_toggle_button_get_active((GtkToggleButton*) widget);
+	*bool_marked[k%100][k/100] = gtk_toggle_button_get_active((GtkToggleButton*) widget);
 }
 void callback_mark_all( GtkWidget *widget, gpointer data ){
 	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for (i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
 			*bool_marked[i][j] = TRUE;
 		}
@@ -89,8 +89,8 @@ void callback_mark_all( GtkWidget *widget, gpointer data ){
 
 void callback_mark_inverse( GtkWidget *widget, gpointer data ){
 	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for (i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			if(*bool_marked[i][j]){
 				gtk_toggle_button_set_active(toggle_button[i][j], FALSE);
 				*bool_marked[i][j] = FALSE;
@@ -106,8 +106,8 @@ void callback_mark_inverse( GtkWidget *widget, gpointer data ){
 
 void callback_unmark_all( GtkWidget *widget, gpointer data ){
 	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for (i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gtk_toggle_button_set_active(toggle_button[i][j], FALSE);
 			*bool_marked[i][j] = FALSE;
 		}
@@ -116,8 +116,8 @@ void callback_unmark_all( GtkWidget *widget, gpointer data ){
 }
 void callback_mark_row( GtkWidget *widget, gpointer data ){
 	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for (i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			if((gint)data == j){
 				gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
 				*bool_marked[i][j] = TRUE;
@@ -128,8 +128,8 @@ void callback_mark_row( GtkWidget *widget, gpointer data ){
 }
 void callback_mark_column( GtkWidget *widget, gpointer data ){
 	int i,j;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for (i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			if((gint)data == i){
 				gtk_toggle_button_set_active(toggle_button[i][j], TRUE);
 				*bool_marked[i][j] = TRUE;
@@ -142,8 +142,8 @@ void callback_color_changed(GtkWidget *widget, gpointer data){
 	int i, j;
 	GdkRGBA rgba;
 	gchar color_string[13];
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gtk_color_button_get_rgba(color_button[i][j], &rgba);
 			get_short_color_string(color_string, rgba);
 			gtk_button_set_label ((GtkButton*)toggle_button[i][j], color_string);
@@ -154,8 +154,8 @@ void callback_apply_color( GtkWidget *widget, gpointer data ){
 	int i,j;
 	gboolean any_selected = FALSE;
 	GdkRGBA rgba;
-	for (i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for (i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			if(*bool_marked[i][j]){
 				gtk_color_button_get_rgba((GtkColorButton*)data,&rgba);
 				gtk_color_button_set_rgba(color_button[i][j], &rgba);

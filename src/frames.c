@@ -28,10 +28,10 @@ Frame* frame_new(){
 	int i, j;
 	Frame *new_frame;
 	new_frame = malloc(sizeof(Frame));
-	new_frame->frame = malloc(10*sizeof(gchar**));
-    for(i = 0; i<10;i++){
-    	new_frame->frame[i] = malloc(6*sizeof(gchar*));
-    	for(j = 0; j<6; j++){
+	new_frame->frame = malloc(X_SIZE*sizeof(gchar**));
+    for(i = 0; i<X_SIZE;i++){
+    	new_frame->frame[i] = malloc(Y_SIZE*sizeof(gchar*));
+    	for(j = 0; j<Y_SIZE; j++){
     		new_frame->frame[i][j] = NULL;
     		new_frame->frame[i][j] = malloc(8*sizeof(char));
     	}
@@ -60,8 +60,8 @@ void frame_header_init(){
 
 void frame_free(Frame *delete_frame){
 	int i, j;
-    for(i = 0; i<10; i++){
-    	for(j = 0; j<6; j++){
+    for(i = 0; i<X_SIZE; i++){
+    	for(j = 0; j<Y_SIZE; j++){
     		free(delete_frame->frame[i][j]);
     	}
     	free(delete_frame->frame[i]);
@@ -99,8 +99,8 @@ gboolean frame_delete(){
 void frame_update_current(GtkColorButton*** color_buttons){
 	int i, j;
 	GdkRGBA rgba;
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gtk_color_button_get_rgba(color_buttons[i][j], &rgba);
 			get_short_color_string(frame_header->current_frame->frame[i][j], rgba);
 		}
@@ -161,8 +161,8 @@ void frame_insert_back(GtkColorButton*** color_buttons){
 void frame_load_colors(GtkColorButton*** color_buttons){
 	int i, j;
 	GdkRGBA rgba;
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gdk_rgba_parse(&rgba, frame_header->current_frame->frame[i][j]);
 			gtk_color_button_set_rgba(color_buttons[i][j], &rgba);
 		}
@@ -209,8 +209,8 @@ void frame_auto_dim(gint number_of_steps, GtkColorButton*** color_buttons, gbool
 		if(forward){frame_create_front_frame();}
 		else{frame_create_back_frame();}
 
-		for(i = 0; i<10; i++){
-			for(j = 0; j<6; j++){
+		for(i = 0; i<X_SIZE; i++){
+			for(j = 0; j<Y_SIZE; j++){
 				gdk_rgba_parse(&rgba_start, frame_start->frame[i][j]);
 				gdk_rgba_parse(&rgba_end, frame_end->frame[i][j]);
 				rgba_temp.red = rgba_start.red + (rgba_end.red - rgba_start.red)*k/number_of_steps;
@@ -236,8 +236,8 @@ void frame_store_frame(char string[],gboolean create_new){
 	if(create_new){
 		frame_create_front_frame();
 	}
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<Y_SIZE; i++){
+		for(j = 0; j<X_SIZE; j++){
 			strcpy(frame_header->current_frame->frame[i][j],strndup(string+((i*6+j)*7),7));
 		}
 	}
@@ -245,8 +245,8 @@ void frame_store_frame(char string[],gboolean create_new){
 
 void frame_make_black(){
 	int i,j;
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			strcpy(frame_header->current_frame->frame[i][j], "#000000");
 		}
 	}
@@ -256,23 +256,23 @@ void frame_shift(gint up, gint left, gint x, gint y){
 	int i,j;
 	GdkRGBA rgba;
 	if(!up && !left){
-		for(i = x; i<10; i++){
-			for(j = y; j<6; j++){
-				gtk_color_button_get_rgba(color_button[9-i+left][5-j+up], &rgba);
-				gtk_color_button_set_rgba(color_button[9-i+x-left][5-j+y-up], &rgba);
-				if((i==9 && x) || (j==5 && y)){
+		for(i = x; i<X_SIZE; i++){
+			for(j = y; j<Y_SIZE; j++){
+				gtk_color_button_get_rgba(color_button[X_SIZE-1-i+left][Y_SIZE-1-j+up], &rgba);
+				gtk_color_button_set_rgba(color_button[X_SIZE-1-i+x-left][Y_SIZE-1-j+y-up], &rgba);
+				if((i==(X_SIZE-1) && x) || (j==(Y_SIZE-1) && y)){
 					gdk_rgba_parse(&rgba, "#000000");
-					gtk_color_button_set_rgba(color_button[9-i][5-j], &rgba);
+					gtk_color_button_set_rgba(color_button[X_SIZE-1-i][Y_SIZE-1-j], &rgba);
 				}
 			}
 		}
 	}
 	else{
-		for(i = x; i<10; i++){
-			for(j = y; j<6; j++){
+		for(i = x; i<X_SIZE; i++){
+			for(j = y; j<Y_SIZE; j++){
 				gtk_color_button_get_rgba(color_button[i-x+left][j-y+up], &rgba);
 				gtk_color_button_set_rgba(color_button[i-left][j-up], &rgba);
-				if((i==9 && x) || (j==5 && y)){
+				if((i==(X_SIZE-1) && x) || (j==(Y_SIZE-1) && y)){
 					gdk_rgba_parse(&rgba, "#000000");
 					gtk_color_button_set_rgba(color_button[i][j], &rgba);
 				}
@@ -283,8 +283,8 @@ void frame_shift(gint up, gint left, gint x, gint y){
 
 void frame_copy(){
 	int i,j;
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gtk_color_button_get_rgba(color_button[i][j], color_copy[i][j]);
 		}
 	}
@@ -292,8 +292,8 @@ void frame_copy(){
 
 void frame_paste(){
 	int i,j;
-	for(i = 0; i<10; i++){
-		for(j = 0; j<6; j++){
+	for(i = 0; i<X_SIZE; i++){
+		for(j = 0; j<Y_SIZE; j++){
 			gtk_color_button_set_rgba(color_button[i][j], color_copy[i][j]);
 		}
 	}

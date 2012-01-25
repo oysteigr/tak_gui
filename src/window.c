@@ -30,10 +30,10 @@ void window_colorbuttons_init(){
     char *strpoint;
     int i, j;
     gdk_rgba_parse(&rgba,"#000000");
-	for(i = 0; i<10;i++){
-		for(j = 0; j<6;j++){
+	for(i = 0; i<X_SIZE;i++){
+		for(j = 0; j<Y_SIZE;j++){
 			strpoint = malloc(sizeof(char[12]));
-			sprintf(strpoint, "%d",j*10+i);
+			sprintf(strpoint, "%d",j*100+i);
 
 			color_button[i][j] = (GtkColorButton*)gtk_color_button_new ();
 			toggle_button[i][j] = (GtkToggleButton*)gtk_toggle_button_new_with_label("#000000");

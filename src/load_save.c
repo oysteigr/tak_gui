@@ -33,8 +33,8 @@ void save_to_file( GtkWidget *widget, gpointer data){
 	frame_to_write = frame_header->start_frame;
 	file = fopen(filename,"w");
 	while(1){
-		for(i = 0; i<10; i++){
-			for(j = 0; j<6; j++){
+		for(i = 0; i<X_SIZE; i++){
+			for(j = 0; j<Y_SIZE; j++){
 				fprintf(file,"%s",frame_to_write->frame[i][j]);
 			}
 		}
